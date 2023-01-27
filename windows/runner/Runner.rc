@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "bws_agreement_creator" "\0"
+            VALUE "FileDescription", "BWS cost register" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "bws_agreement_creator" "\0"
+            VALUE "InternalName", "BWS cost register" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2022 com.example. All rights reserved." "\0"
             VALUE "OriginalFilename", "bws_agreement_creator.exe" "\0"
-            VALUE "ProductName", "bws_agreement_creator" "\0"
+            VALUE "ProductName", "BWS cost register" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END
