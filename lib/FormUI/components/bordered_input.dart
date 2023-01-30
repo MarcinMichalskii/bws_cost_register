@@ -15,7 +15,8 @@ class BorderedInput extends StatelessWidget {
       this.prefixIcon,
       this.errorText,
       this.onSaved,
-      this.validator});
+      this.validator,
+      this.inputType = TextInputType.text});
 
   final String placeholder;
   final bool isSecure;
@@ -28,6 +29,7 @@ class BorderedInput extends StatelessWidget {
   final Icon? prefixIcon;
   final FormFieldSetter<String>? onSaved;
   final FormFieldValidator<String>? validator;
+  final TextInputType inputType;
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +43,7 @@ class BorderedInput extends StatelessWidget {
           obscureText: isSecure,
           autocorrect: false,
           enableSuggestions: false,
-          keyboardType: TextInputType.visiblePassword,
+          keyboardType: inputType,
           style: const TextStyle(color: Colors.white),
           decoration: InputDecoration(
               prefixIcon: prefixIcon,
