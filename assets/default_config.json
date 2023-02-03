@@ -1,0 +1,17 @@
+{
+    "categories": [
+        {
+            "name": "category1",
+            "subCategories": ["subCategory1", "subCategory2"]
+        },
+        {
+            "name": "category2",
+            "subCategories": ["AAA", "BBB"]
+        },
+        {
+            "name": "Inne",
+            "subCategories": [""]
+        }
+    ],
+    "employees": ["John", "Jane", "Jack"]
+}

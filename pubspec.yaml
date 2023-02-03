@@ -43,7 +43,14 @@ dependencies:
   url_launcher: ^6.1.7
   flutter_signin_button: ^2.0.0
   currency_text_input_formatter: ^2.1.7
-  
+  freezed_annotation: ^2.0.3
+  image_picker: ^0.8.6+1
+  google_sign_in: ^5.4.4
+  google_sign_in_web: ^0.10.2+1
+  googleapis: ^10.0.0
+  flutter_secure_storage: ^5.0.2
+  path_provider: ^2.0.12
+  uuid: ^3.0.6
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -56,6 +63,8 @@ dev_dependencies:
   build_runner: ^2.1.7
   flutter_lints: ^2.0.0
   copy_with_extension_gen: ^4.0.4
+  json_serializable: ^6.3.1
+  change_app_package_name: ^1.1.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -73,6 +82,8 @@ flutter:
       - assets/bws_logo.png
       - assets/google_icon.png
       - assets/fonts/opensans.ttf
+      - assets/default_config.json
+      - assets/pdf.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

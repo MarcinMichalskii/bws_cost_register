@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "837990215673",
+    "project_id": "bwscostregister",
+    "storage_bucket": "bwscostregister.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:837990215673:android:e1d2f67be25017d29d1728",
+        "android_client_info": {
+          "package_name": "com.bws.costregister"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "837990215673-vfr60r16toe4mdpggsqppov79aopr0gg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.bws.costregister",
+            "certificate_hash": "190a09a5c096c7e5520f69175e8ce09459fe1f90"
+          }
+        },
+        {
+          "client_id": "837990215673-fs55rqsc5hen5t9viv0ivsknapcl1uno.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDPm9sWK0dVx1WsXgdKohKT_KvP8frOIbA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "837990215673-fs55rqsc5hen5t9viv0ivsknapcl1uno.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

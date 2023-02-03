@@ -1,25 +1,7 @@
-extension CheckIfAdult on DateTime {
-  bool isAdult() {
-    final birthday = this;
-    DateTime currentDate = DateTime.now();
-    int age = currentDate.year - birthday.year;
-    if (currentDate.month < birthday.month ||
-        (currentDate.month == birthday.month &&
-            currentDate.day < birthday.day)) {
-      age--;
-    }
-    return age >= 18;
-  }
+import 'package:intl/intl.dart';
 
-  bool isOver16() {
-    final birthday = this;
-    DateTime currentDate = DateTime.now();
-    int age = currentDate.year - birthday.year;
-    if (currentDate.month < birthday.month ||
-        (currentDate.month == birthday.month &&
-            currentDate.day < birthday.day)) {
-      age--;
-    }
-    return age >= 16;
-  }
+extension DateExtensions on DateTime {
+  String get formattedDate => DateFormat('MM.yyyy').format(this);
+  String get formattedDateWithDays => DateFormat('dd.MM.yyyy').format(this);
+  String get formattedTime => DateFormat('HH:mm').format(this);
 }

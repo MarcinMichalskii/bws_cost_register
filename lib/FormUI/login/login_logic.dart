@@ -1,5 +1,6 @@
 import 'package:bws_agreement_creator/FormUI/components/bws_logo.dart';
 import 'package:bws_agreement_creator/app_state.dart';
+import 'package:bws_agreement_creator/utils/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/button_list.dart';
 import 'package:flutter_signin_button/button_view.dart';
@@ -27,9 +28,12 @@ class LoginLogic extends HookConsumerWidget {
                   SignInButton(
                     Buttons.GoogleDark,
                     text: "    Zaloguj z Google",
-                    onPressed: () {
-                      ref.read(isLoggedInProvider.notifier).state =
-                          !ref.read(isLoggedInProvider);
+                    onPressed: () async {
+                      final headers = await AuthService().signInWithGoogle();
+                      if (headers == null) {
+                        return;
+                      }
+                      ref.read(userAuthProvider.notifier).state = headers;
                     },
                   )
                 ],
