@@ -12,19 +12,23 @@ class AuthService {
   }
 
   Future<Map<String, String>?> signInWithGoogle() async {
-    final googleSignIn = GoogleSignIn.standard(scopes: [
-      drive.DriveApi.driveScope,
-      sheets.SheetsApi.spreadsheetsScope
-    ]);
-    final account = await googleSignIn.signIn();
-    await googleSignIn.currentUser?.clearAuthCache();
-    await googleSignIn.signInSilently();
+    try {
+      final googleSignIn = GoogleSignIn.standard(scopes: [
+        drive.DriveApi.driveScope,
+        sheets.SheetsApi.spreadsheetsScope
+      ]);
+      final account = await googleSignIn.signIn();
+      await googleSignIn.currentUser?.clearAuthCache();
+      await googleSignIn.signInSilently();
 
-    final authHeaders = account?.authHeaders;
-    final jprdl = await googleSignIn.currentUser?.authentication;
-    print(jprdl?.accessToken);
-    print("DUPSKO");
-    return authHeaders;
+      final authHeaders = account?.authHeaders;
+      final jprdl = await googleSignIn.currentUser?.authentication;
+      print(jprdl?.accessToken);
+      print("DUPSKO");
+      return authHeaders;
+    } catch (e) {
+      print(e);
+    }
   }
 
   Future<Map<String, String>?> getGoogleAuthHeaders() async {
