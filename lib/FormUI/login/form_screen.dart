@@ -26,15 +26,17 @@ class FormScreen extends HookConsumerWidget {
             ),
           )
         ]),
-        body: Column(
-          children: [
-            Center(
-              child: Container(
-                  constraints:
-                      const BoxConstraints(maxWidth: Consts.defaultMaxWidth),
-                  child: FormLogic()),
-            ),
-          ],
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              Center(
+                child: Container(
+                    constraints:
+                        const BoxConstraints(maxWidth: Consts.defaultMaxWidth),
+                    child: FormLogic()),
+              ),
+            ],
+          ),
         ));
   }
 }

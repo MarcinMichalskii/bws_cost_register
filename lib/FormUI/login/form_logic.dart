@@ -164,138 +164,121 @@ class FormLogic extends HookConsumerWidget {
             ),
           ));
     }
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return Column(
       children: [
-        Expanded(
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                if (setWageHidden.value == false)
-                  Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 24),
-                    child: BorderedInput(
-                      inputType: TextInputType.number,
-                      onChanged: setWage,
-                      placeholder: 'Kwota netto',
-                      inputFormatters: [wageFormatter],
-                    ),
-                  ),
-                Container(
-                  margin: const EdgeInsets.fromLTRB(24, 8, 24, 8),
-                  child: SelectDateButton(
-                      dateText: selectedDate,
-                      headerText: "Data",
-                      onDateSelected:
-                          ref.read(FormNotifier.provider.notifier).setDate),
-                ),
-                Container(
-                  margin: const EdgeInsets.fromLTRB(24, 8, 24, 8),
-                  child: MenuButton(
-                      header: 'Osoba',
-                      dropdownValue: ref.watch(FormNotifier.provider).person,
-                      items: config?.employees ?? [],
-                      onChanged:
-                          ref.read(FormNotifier.provider.notifier).setPerson),
-                ),
-                Container(
-                  margin: const EdgeInsets.fromLTRB(24, 8, 24, 8),
-                  child: MenuButton(
-                      header: 'Kategoria',
-                      dropdownValue: ref.watch(FormNotifier.provider).category,
-                      items: config.categories.map((e) => e.name).toList(),
-                      onChanged:
-                          ref.read(FormNotifier.provider.notifier).setCategory),
-                ),
-                if (subcategories.isEmpty == false)
-                  Container(
-                    margin: const EdgeInsets.fromLTRB(24, 8, 24, 8),
-                    child: MenuButton(
-                        header: 'Podkategoria',
-                        dropdownValue:
-                            ref.watch(FormNotifier.provider).subcategory,
-                        items: subcategories,
-                        onChanged: ref
-                            .read(FormNotifier.provider.notifier)
-                            .setSubcategory),
-                  ),
-                if (subcategories.isEmpty == true)
-                  Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 24),
-                    child: BorderedInput(
-                      onChanged: ref
-                          .read(FormNotifier.provider.notifier)
-                          .setSubcategory,
-                      placeholder: 'Podkategoria',
-                    ),
-                  ),
-                Container(
-                  margin: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      if (selectedPdf == null && !kIsWeb)
-                        ButtonIconTitle(
-                          onTap: takePhoto,
-                          title: "Zrób zdjęcie",
-                          icon: Icons.camera_alt_outlined,
-                        ),
-                      if (selectedPdf == null)
-                        ButtonIconTitle(
-                          onTap: pickImageFromFiles,
-                          title: "Wybierz z galerii",
-                          icon: Icons.image_outlined,
-                        ),
-                      if (selectedPhotos.isEmpty && selectedPdf == null)
-                        ButtonIconTitle(
-                          onTap: pickPdfFromFiles,
-                          title: "Dodaj PDF",
-                          icon: Icons.picture_as_pdf_outlined,
-                        )
-                    ],
-                  ),
-                ),
-                Container(
-                  margin: const EdgeInsets.only(bottom: 24),
-                  child: Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      ...selectedPhotos
-                          .mapIndexed((index, photo) => PhotoTile(
-                                data: photo,
-                                onTap: () => {
-                                  ref
-                                      .read(FormNotifier.provider.notifier)
-                                      .removePhoto(index)
-                                },
-                              ))
-                          .toList(),
-                      if (selectedPdf != null && pdfIcon.value != null)
-                        PhotoTile(
-                            onTap: () {
-                              ref
-                                  .read(FormNotifier.provider.notifier)
-                                  .setPdfFile(null);
-                            },
-                            title: selectedDate.formattedDateWithDays,
-                            data: pdfIcon.value!)
-                    ],
-                  ),
-                ),
-                isLoading
-                    ? const CircularProgressIndicator(
-                        color: CustomColors.applicationColorMain,
-                      )
-                    : DefaultBorderedButton(
-                        onTap: () async {
-                          onSendTapped();
-                        },
-                        text: "Wyślij")
-              ],
+        if (setWageHidden.value == false)
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 24),
+            child: BorderedInput(
+              inputType: TextInputType.number,
+              onChanged: setWage,
+              placeholder: 'Kwota netto',
+              inputFormatters: [wageFormatter],
             ),
           ),
+        Container(
+          margin: const EdgeInsets.fromLTRB(24, 8, 24, 8),
+          child: SelectDateButton(
+              dateText: selectedDate,
+              headerText: "Data",
+              onDateSelected: ref.read(FormNotifier.provider.notifier).setDate),
         ),
+        Container(
+          margin: const EdgeInsets.fromLTRB(24, 8, 24, 8),
+          child: MenuButton(
+              header: 'Osoba',
+              dropdownValue: ref.watch(FormNotifier.provider).person,
+              items: config?.employees ?? [],
+              onChanged: ref.read(FormNotifier.provider.notifier).setPerson),
+        ),
+        Container(
+          margin: const EdgeInsets.fromLTRB(24, 8, 24, 8),
+          child: MenuButton(
+              header: 'Kategoria',
+              dropdownValue: ref.watch(FormNotifier.provider).category,
+              items: config.categories.map((e) => e.name).toList(),
+              onChanged: ref.read(FormNotifier.provider.notifier).setCategory),
+        ),
+        if (subcategories.isEmpty == false)
+          Container(
+            margin: const EdgeInsets.fromLTRB(24, 8, 24, 8),
+            child: MenuButton(
+                header: 'Podkategoria',
+                dropdownValue: ref.watch(FormNotifier.provider).subcategory,
+                items: subcategories,
+                onChanged:
+                    ref.read(FormNotifier.provider.notifier).setSubcategory),
+          ),
+        if (subcategories.isEmpty == true)
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 24),
+            child: BorderedInput(
+              onChanged:
+                  ref.read(FormNotifier.provider.notifier).setSubcategory,
+              placeholder: 'Podkategoria',
+            ),
+          ),
+        Container(
+          margin: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              if (selectedPdf == null && !kIsWeb)
+                ButtonIconTitle(
+                  onTap: takePhoto,
+                  title: "Zrób zdjęcie",
+                  icon: Icons.camera_alt_outlined,
+                ),
+              if (selectedPdf == null)
+                ButtonIconTitle(
+                  onTap: pickImageFromFiles,
+                  title: "Wybierz z galerii",
+                  icon: Icons.image_outlined,
+                ),
+              if (selectedPhotos.isEmpty && selectedPdf == null)
+                ButtonIconTitle(
+                  onTap: pickPdfFromFiles,
+                  title: "Dodaj PDF",
+                  icon: Icons.picture_as_pdf_outlined,
+                )
+            ],
+          ),
+        ),
+        Container(
+          margin: const EdgeInsets.only(bottom: 24),
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              ...selectedPhotos
+                  .mapIndexed((index, photo) => PhotoTile(
+                        data: photo,
+                        onTap: () => {
+                          ref
+                              .read(FormNotifier.provider.notifier)
+                              .removePhoto(index)
+                        },
+                      ))
+                  .toList(),
+              if (selectedPdf != null && pdfIcon.value != null)
+                PhotoTile(
+                    onTap: () {
+                      ref.read(FormNotifier.provider.notifier).setPdfFile(null);
+                    },
+                    title: selectedDate.formattedDateWithDays,
+                    data: pdfIcon.value!)
+            ],
+          ),
+        ),
+        isLoading
+            ? const CircularProgressIndicator(
+                color: CustomColors.applicationColorMain,
+              )
+            : DefaultBorderedButton(
+                onTap: () async {
+                  onSendTapped();
+                },
+                text: "Wyślij")
       ],
     );
   }
