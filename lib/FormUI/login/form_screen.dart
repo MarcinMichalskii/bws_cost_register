@@ -1,8 +1,7 @@
 import 'package:bws_agreement_creator/FormUI/login/form_logic.dart';
-import 'package:bws_agreement_creator/app_state.dart';
 import 'package:bws_agreement_creator/utils/auth_service.dart';
 import 'package:bws_agreement_creator/utils/colors.dart';
-import 'package:bws_agreement_creator/utils/use_build_effect.dart';
+import 'package:bws_agreement_creator/utils/consts.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -21,13 +20,21 @@ class FormScreen extends HookConsumerWidget {
                 backgroundColor: MaterialStateProperty.all<Color>(
                     CustomColors.applicationColorMain)),
             onPressed: () {
-              AuthService().signOut(ref);
+              AuthService(ref: ref).signOut();
             },
             child: Text('Wyloguj', style: TextStyle(color: Colors.black)),
           ),
         )
       ]),
-      body: FormLogic(),
+      body: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+              constraints:
+                  const BoxConstraints(maxWidth: Consts.defaultMaxWidth),
+              child: FormLogic()),
+        ],
+      ),
     );
   }
 }

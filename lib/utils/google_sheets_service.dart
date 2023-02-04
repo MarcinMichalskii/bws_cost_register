@@ -1,3 +1,4 @@
+import 'package:bws_agreement_creator/app_state.dart';
 import 'package:bws_agreement_creator/form_controller.dart';
 import 'package:bws_agreement_creator/utils/auth_service.dart';
 import 'package:bws_agreement_creator/utils/date_extensions.dart';
@@ -16,19 +17,26 @@ class GoogleData {
 
 class GoogleSheetsService {
   Future<void> addNewEntry(CostFormState data, WidgetRef ref) async {
-    final newHeaders = await AuthService().getGoogleAuthHeaders();
+    final authService = AuthService(ref: ref);
+    final userData = ref.read(userAuthProvider);
+    if (userData?.refreshToken == null) {
+      authService.signOut();
+      return;
+    }
+    final headers = await authService.getAccessToken();
+
     final id = const Uuid().v4().toString();
-    if (newHeaders == null) {
-      AuthService().signOut(ref);
+    if (headers == null) {
+      AuthService(ref: ref).signOut();
       return;
     }
     final pdf = await PdfHelper().generatePdfPage(data);
-    await GoogleDriveService().uploadFileToGoogleDrive(newHeaders, pdf, id);
-    final sheetNames = await getSpreadSheetsNames(newHeaders);
+    await GoogleDriveService().uploadFileToGoogleDrive(headers, pdf, id);
+    final sheetNames = await getSpreadSheetsNames(headers);
     if (!sheetNames.contains(DateTime.now().formattedDate)) {
-      await addNewSpreadSheet(newHeaders);
+      await addNewSpreadSheet(headers);
     }
-    await addNewRow(newHeaders, data, id);
+    await addNewRow(headers, data, id);
   }
 
   Future<void> addNewSpreadSheet(Map<String, String> headers) async {

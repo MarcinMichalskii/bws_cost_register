@@ -47,10 +47,12 @@ class FormLogic extends HookConsumerWidget {
 
     Future<void> readConfig() async {
       try {
-        await GoogleDriveService().getConfigFromDrive(
-            ref.read(userAuthProvider.notifier).state!, ref);
+        await GoogleDriveService().getConfigFromDrive(ref);
       } catch (e) {
-        AuthService().signOut(ref);
+        ref.read(errorProvider.notifier).state = e.toString();
+        print(e);
+
+        AuthService(ref: ref).signOut();
       }
     }
 
@@ -78,12 +80,13 @@ class FormLogic extends HookConsumerWidget {
         allowedExtensions: ['pdf'],
         type: FileType.custom,
       );
+
       if (result != null &&
-          lookupMimeType(result.files.single.path!) == 'application/pdf') {
-        File file = await File(result.files.single.path!).create();
+          lookupMimeType('', headerBytes: result.files.single.bytes) ==
+              'application/pdf') {
         ref
             .read(FormNotifier.provider.notifier)
-            .setPdfFile(await file.readAsBytes());
+            .setPdfFile(result.files.single.bytes);
       }
     }, []);
 
@@ -96,10 +99,11 @@ class FormLogic extends HookConsumerWidget {
 
       if (result != null) {
         result.files.forEach((platformFile) async {
-          File file = File(platformFile.path!);
-          ref
-              .read(FormNotifier.provider.notifier)
-              .addPhoto(await file.readAsBytes());
+          if (platformFile.bytes != null) {
+            ref
+                .read(FormNotifier.provider.notifier)
+                .addPhoto(platformFile.bytes!);
+          }
         });
       }
     }, []);
@@ -149,127 +153,122 @@ class FormLogic extends HookConsumerWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Expanded(
-          child: Container(
-            constraints: const BoxConstraints(maxWidth: Consts.defaultMaxWidth),
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 24),
+                  child: BorderedInput(
+                    inputType: TextInputType.number,
+                    onChanged: setWage,
+                    placeholder: 'Kwota netto',
+                    inputFormatters: [wageFormatter],
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.fromLTRB(24, 8, 24, 8),
+                  child: MenuButton(
+                      header: 'Osoba',
+                      dropdownValue: ref.watch(FormNotifier.provider).person,
+                      items: config?.employees ?? [],
+                      onChanged:
+                          ref.read(FormNotifier.provider.notifier).setPerson),
+                ),
+                Container(
+                  margin: const EdgeInsets.fromLTRB(24, 8, 24, 8),
+                  child: MenuButton(
+                      header: 'Kategoria',
+                      dropdownValue: ref.watch(FormNotifier.provider).category,
+                      items: config.categories.map((e) => e.name).toList(),
+                      onChanged:
+                          ref.read(FormNotifier.provider.notifier).setCategory),
+                ),
+                if (selectedCategory?.toLowerCase() != 'nieskategoryzowane')
+                  Container(
+                    margin: const EdgeInsets.fromLTRB(24, 8, 24, 8),
+                    child: MenuButton(
+                        header: 'Podkategoria',
+                        dropdownValue:
+                            ref.watch(FormNotifier.provider).subcategory,
+                        items: subcategories,
+                        onChanged: ref
+                            .read(FormNotifier.provider.notifier)
+                            .setSubcategory),
+                  ),
+                if (selectedCategory?.toLowerCase() == 'nieskategoryzowane')
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 24),
                     child: BorderedInput(
-                      inputType: TextInputType.number,
-                      onChanged: setWage,
-                      placeholder: 'Kwota netto',
-                      inputFormatters: [wageFormatter],
+                      onChanged: ref
+                          .read(FormNotifier.provider.notifier)
+                          .setSubcategory,
+                      placeholder: 'Podkategoria',
                     ),
                   ),
-                  Container(
-                    margin: const EdgeInsets.fromLTRB(24, 8, 24, 8),
-                    child: MenuButton(
-                        header: 'Osoba',
-                        dropdownValue: ref.watch(FormNotifier.provider).person,
-                        items: config?.employees ?? [],
-                        onChanged:
-                            ref.read(FormNotifier.provider.notifier).setPerson),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.fromLTRB(24, 8, 24, 8),
-                    child: MenuButton(
-                        header: 'Kategoria',
-                        dropdownValue:
-                            ref.watch(FormNotifier.provider).category,
-                        items: config.categories.map((e) => e.name).toList(),
-                        onChanged: ref
-                            .read(FormNotifier.provider.notifier)
-                            .setCategory),
-                  ),
-                  if (selectedCategory?.toLowerCase() != 'nieskategoryzowane')
-                    Container(
-                      margin: const EdgeInsets.fromLTRB(24, 8, 24, 8),
-                      child: MenuButton(
-                          header: 'Podkategoria',
-                          dropdownValue:
-                              ref.watch(FormNotifier.provider).subcategory,
-                          items: subcategories,
-                          onChanged: ref
-                              .read(FormNotifier.provider.notifier)
-                              .setSubcategory),
-                    ),
-                  if (selectedCategory?.toLowerCase() == 'nieskategoryzowane')
-                    Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 24),
-                      child: BorderedInput(
-                        onChanged: ref
-                            .read(FormNotifier.provider.notifier)
-                            .setSubcategory,
-                        placeholder: 'Podkategoria',
-                      ),
-                    ),
-                  Container(
-                    margin: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        if (selectedPdf == null && !kIsWeb)
-                          ButtonIconTitle(
-                            onTap: takePhoto,
-                            title: "Zrób zdjęcie",
-                            icon: Icons.camera_alt_outlined,
-                          ),
-                        if (selectedPdf == null)
-                          ButtonIconTitle(
-                            onTap: pickImageFromFiles,
-                            title: "Wybierz z galerii",
-                            icon: Icons.image_outlined,
-                          ),
-                        if (selectedPhotos.isEmpty && selectedPdf == null)
-                          ButtonIconTitle(
-                            onTap: pickPdfFromFiles,
-                            title: "Dodaj PDF",
-                            icon: Icons.picture_as_pdf_outlined,
-                          )
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.only(bottom: 24),
-                    child: Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        ...selectedPhotos
-                            .mapIndexed((index, photo) => PhotoTile(
-                                  data: photo,
-                                  onTap: () => {
-                                    ref
-                                        .read(FormNotifier.provider.notifier)
-                                        .removePhoto(index)
-                                  },
-                                ))
-                            .toList(),
-                        if (selectedPdf != null && pdfIcon.value != null)
-                          PhotoTile(
-                              onTap: () {
-                                ref
-                                    .read(FormNotifier.provider.notifier)
-                                    .setPdfFile(null);
-                              },
-                              title: DateTime.now().formattedDateWithDays,
-                              data: pdfIcon.value!)
-                      ],
-                    ),
-                  ),
-                  isLoading
-                      ? const CircularProgressIndicator(
-                          color: CustomColors.applicationColorMain,
+                Container(
+                  margin: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      if (selectedPdf == null && !kIsWeb)
+                        ButtonIconTitle(
+                          onTap: takePhoto,
+                          title: "Zrób zdjęcie",
+                          icon: Icons.camera_alt_outlined,
+                        ),
+                      if (selectedPdf == null)
+                        ButtonIconTitle(
+                          onTap: pickImageFromFiles,
+                          title: "Wybierz z galerii",
+                          icon: Icons.image_outlined,
+                        ),
+                      if (selectedPhotos.isEmpty && selectedPdf == null)
+                        ButtonIconTitle(
+                          onTap: pickPdfFromFiles,
+                          title: "Dodaj PDF",
+                          icon: Icons.picture_as_pdf_outlined,
                         )
-                      : DefaultBorderedButton(
-                          onTap: () {
-                            onSendTapped();
-                          },
-                          text: "Wyślij")
-                ],
-              ),
+                    ],
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.only(bottom: 24),
+                  child: Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      ...selectedPhotos
+                          .mapIndexed((index, photo) => PhotoTile(
+                                data: photo,
+                                onTap: () => {
+                                  ref
+                                      .read(FormNotifier.provider.notifier)
+                                      .removePhoto(index)
+                                },
+                              ))
+                          .toList(),
+                      if (selectedPdf != null && pdfIcon.value != null)
+                        PhotoTile(
+                            onTap: () {
+                              ref
+                                  .read(FormNotifier.provider.notifier)
+                                  .setPdfFile(null);
+                            },
+                            title: DateTime.now().formattedDateWithDays,
+                            data: pdfIcon.value!)
+                    ],
+                  ),
+                ),
+                isLoading
+                    ? const CircularProgressIndicator(
+                        color: CustomColors.applicationColorMain,
+                      )
+                    : DefaultBorderedButton(
+                        onTap: () {
+                          onSendTapped();
+                        },
+                        text: "Wyślij")
+              ],
             ),
           ),
         ),

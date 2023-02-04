@@ -29,11 +29,7 @@ class LoginLogic extends HookConsumerWidget {
                     Buttons.GoogleDark,
                     text: "    Zaloguj z Google",
                     onPressed: () async {
-                      final headers = await AuthService().signInWithGoogle();
-                      if (headers == null) {
-                        return;
-                      }
-                      ref.read(userAuthProvider.notifier).state = headers;
+                      await AuthService(ref: ref).signInWithGoogle();
                     },
                   )
                 ],
