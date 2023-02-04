@@ -1,11 +1,11 @@
 {
-    "name": "bws_agreement_creator",
-    "short_name": "bws_agreement_creator",
+    "name": "bws_cost_register",
+    "short_name": "bws_cost_register",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "App for registering costs in BWS company",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

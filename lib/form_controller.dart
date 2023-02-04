@@ -1,13 +1,13 @@
+import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'package:copy_with_extension/copy_with_extension.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 part 'form_controller.g.dart';
 
 @CopyWith()
 class CostFormState {
   final int? nettoValue;
+  final DateTime selectedDate;
   final String? person;
   final String? category;
   final String? subcategory;
@@ -20,11 +20,13 @@ class CostFormState {
       this.category,
       this.subcategory,
       required this.photos,
+      required this.selectedDate,
       this.pdfFile});
 }
 
 class FormNotifier extends StateNotifier<CostFormState> {
-  FormNotifier() : super(CostFormState(photos: []));
+  FormNotifier()
+      : super(CostFormState(photos: [], selectedDate: DateTime.now()));
   static final provider =
       StateNotifierProvider.autoDispose<FormNotifier, CostFormState>((ref) {
     return FormNotifier();
@@ -63,6 +65,10 @@ class FormNotifier extends StateNotifier<CostFormState> {
     state = state.copyWith(pdfFile: pdfFile);
   }
 
+  void setDate(DateTime date) {
+    state = state.copyWith(selectedDate: date);
+  }
+
   String? getValidationError() {
     if (state.nettoValue == null) {
       return "Sprawdź wartość netto";
@@ -90,6 +96,7 @@ class FormNotifier extends StateNotifier<CostFormState> {
         category: null,
         subcategory: null,
         photos: [],
-        pdfFile: null);
+        pdfFile: null,
+        selectedDate: DateTime.now());
   }
 }

@@ -11,30 +11,30 @@ class FormScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(backgroundColor: Colors.transparent, actions: [
-        Container(
-          margin: const EdgeInsets.fromLTRB(0, 8, 16, 8),
-          child: ElevatedButton(
-            style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<Color>(
-                    CustomColors.applicationColorMain)),
-            onPressed: () {
-              AuthService(ref: ref).signOut();
-            },
-            child: Text('Wyloguj', style: TextStyle(color: Colors.black)),
-          ),
-        )
-      ]),
-      body: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
+        backgroundColor: Colors.black,
+        appBar: AppBar(backgroundColor: Colors.transparent, actions: [
           Container(
-              constraints:
-                  const BoxConstraints(maxWidth: Consts.defaultMaxWidth),
-              child: FormLogic()),
-        ],
-      ),
-    );
+            margin: const EdgeInsets.fromLTRB(0, 8, 16, 8),
+            child: ElevatedButton(
+              style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(
+                      CustomColors.applicationColorMain)),
+              onPressed: () {
+                AuthService(ref: ref).signOut();
+              },
+              child: Text('Wyloguj', style: TextStyle(color: Colors.black)),
+            ),
+          )
+        ]),
+        body: Column(
+          children: [
+            Center(
+              child: Container(
+                  constraints:
+                      const BoxConstraints(maxWidth: Consts.defaultMaxWidth),
+                  child: FormLogic()),
+            ),
+          ],
+        ));
   }
 }

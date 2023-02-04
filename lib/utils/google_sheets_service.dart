@@ -18,38 +18,35 @@ class GoogleData {
 class GoogleSheetsService {
   Future<void> addNewEntry(CostFormState data, WidgetRef ref) async {
     final authService = AuthService(ref: ref);
-    final userData = ref.read(userAuthProvider);
-    if (userData?.refreshToken == null) {
-      authService.signOut();
-      return;
-    }
     final headers = await authService.getAccessToken();
 
     final id = const Uuid().v4().toString();
-    if (headers == null) {
-      AuthService(ref: ref).signOut();
-      return;
-    }
+
     final pdf = await PdfHelper().generatePdfPage(data);
-    await GoogleDriveService().uploadFileToGoogleDrive(headers, pdf, id);
+
+    await GoogleDriveService().uploadFileToGoogleDrive(headers, pdf, id, ref,
+        data.nettoValue?.asPLN() ?? '', data.selectedDate);
     final sheetNames = await getSpreadSheetsNames(headers);
-    if (!sheetNames.contains(DateTime.now().formattedDate)) {
-      await addNewSpreadSheet(headers);
+    if (!sheetNames.contains(data.selectedDate.formattedDate)) {
+      await addNewSpreadSheet(headers, ref, data.selectedDate);
     }
-    await addNewRow(headers, data, id);
+    await addNewRow(headers, data, id, ref, data.selectedDate);
   }
 
-  Future<void> addNewSpreadSheet(Map<String, String> headers) async {
-    final authenticateClient = GoogleAuthClient(headers);
-    final newSheetTitle = DateTime.now().formattedDate;
-    sheets.SheetsApi sheetsApi = sheets.SheetsApi(authenticateClient);
-    var sheetFile = await sheetsApi.spreadsheets.get(GoogleData.spreadSheetId);
-    final templateSheetId = sheetFile.sheets
-        ?.firstWhereOrNull((element) => element.properties?.title == 'template')
-        ?.properties
-        ?.sheetId;
-
+  Future<void> addNewSpreadSheet(
+      Map<String, String> headers, WidgetRef ref, DateTime date) async {
     try {
+      final authenticateClient = GoogleAuthClient(headers);
+      final newSheetTitle = date.formattedDate;
+      sheets.SheetsApi sheetsApi = sheets.SheetsApi(authenticateClient);
+      var sheetFile =
+          await sheetsApi.spreadsheets.get(GoogleData.spreadSheetId);
+      final templateSheetId = sheetFile.sheets
+          ?.firstWhereOrNull(
+              (element) => element.properties?.title == 'template')
+          ?.properties
+          ?.sheetId;
+
       await sheetsApi.spreadsheets.batchUpdate(
           sheets.BatchUpdateSpreadsheetRequest.fromJson({
             "requests": [
@@ -64,19 +61,9 @@ class GoogleSheetsService {
           }),
           GoogleData.spreadSheetId);
     } catch (e) {
-      print(e);
+      ref.read(errorProvider.notifier).state = e.toString();
+      AuthService(ref: ref).signOut();
     }
-  }
-
-  Future<void> updateCategories(Map<String, String> headers) async {
-    final authenticateClient = GoogleAuthClient(headers);
-    sheets.SheetsApi sheetsApi = sheets.SheetsApi(authenticateClient);
-    var sheetFile = await sheetsApi.spreadsheets.get(GoogleData.spreadSheetId);
-    final templateSheetId = sheetFile.sheets
-        ?.firstWhereOrNull(
-            (element) => element.properties?.title == 'Kategorie')
-        ?.properties
-        ?.sheetId;
   }
 
   Future<List<String>> getSpreadSheetsNames(Map<String, String> headers) async {
@@ -91,12 +78,12 @@ class GoogleSheetsService {
     return sheetNames ?? [];
   }
 
-  Future<void> addNewRow(
-      Map<String, String> headers, CostFormState data, String id) async {
+  Future<void> addNewRow(Map<String, String> headers, CostFormState data,
+      String id, WidgetRef ref, DateTime date) async {
     final authenticateClient = GoogleAuthClient(headers);
     sheets.SheetsApi sheetsApi = sheets.SheetsApi(authenticateClient);
     final range =
-        '${DateTime.now().formattedDate}!A1:A'; // Change 'Sheet1' to your desired sheet name
+        '${data.selectedDate.formattedDate}!A1:A'; // Change 'Sheet1' to your desired sheet name
     var response = await sheetsApi.spreadsheets.values
         .get(GoogleData.spreadSheetId, range);
     var values = response.values;
@@ -109,18 +96,19 @@ class GoogleSheetsService {
           data.subcategory,
           (data.nettoValue?.asPLN() ?? ''),
           data.person,
-          DateTime.now().formattedDateWithDays,
+          data.selectedDate.formattedDateWithDays,
           id
         ]
       ]
     });
     sheetsApi.spreadsheets.values
-        .append(vr, GoogleData.spreadSheetId,
-            '${DateTime.now().formattedDate}!A${lastRow}',
+        .append(
+            vr, GoogleData.spreadSheetId, '${date.formattedDate}!A${lastRow}',
             valueInputOption: 'USER_ENTERED')
-        .then((sheets.AppendValuesResponse r) {
-      print('append completed.');
-      // client.close();
+        .then((sheets.AppendValuesResponse r) {})
+        .onError((error, stackTrace) {
+      ref.read(errorProvider.notifier).state = error.toString();
+      AuthService(ref: ref).signOut();
     });
   }
 }

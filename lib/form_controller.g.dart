@@ -17,6 +17,8 @@ abstract class _$CostFormStateCWProxy {
 
   CostFormState photos(List<Uint8List> photos);
 
+  CostFormState selectedDate(DateTime selectedDate);
+
   CostFormState subcategory(String? subcategory);
 
   /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `CostFormState(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
@@ -31,6 +33,7 @@ abstract class _$CostFormStateCWProxy {
     Uint8List? pdfFile,
     String? person,
     List<Uint8List>? photos,
+    DateTime? selectedDate,
     String? subcategory,
   });
 }
@@ -57,6 +60,10 @@ class _$CostFormStateCWProxyImpl implements _$CostFormStateCWProxy {
   CostFormState photos(List<Uint8List> photos) => this(photos: photos);
 
   @override
+  CostFormState selectedDate(DateTime selectedDate) =>
+      this(selectedDate: selectedDate);
+
+  @override
   CostFormState subcategory(String? subcategory) =>
       this(subcategory: subcategory);
 
@@ -74,6 +81,7 @@ class _$CostFormStateCWProxyImpl implements _$CostFormStateCWProxy {
     Object? pdfFile = const $CopyWithPlaceholder(),
     Object? person = const $CopyWithPlaceholder(),
     Object? photos = const $CopyWithPlaceholder(),
+    Object? selectedDate = const $CopyWithPlaceholder(),
     Object? subcategory = const $CopyWithPlaceholder(),
   }) {
     return CostFormState(
@@ -97,6 +105,11 @@ class _$CostFormStateCWProxyImpl implements _$CostFormStateCWProxy {
           ? _value.photos
           // ignore: cast_nullable_to_non_nullable
           : photos as List<Uint8List>,
+      selectedDate:
+          selectedDate == const $CopyWithPlaceholder() || selectedDate == null
+              ? _value.selectedDate
+              // ignore: cast_nullable_to_non_nullable
+              : selectedDate as DateTime,
       subcategory: subcategory == const $CopyWithPlaceholder()
           ? _value.subcategory
           // ignore: cast_nullable_to_non_nullable

@@ -1,15 +1,13 @@
-import 'dart:io';
-
 import 'package:bws_agreement_creator/FormUI/components/bordered_input.dart';
 import 'package:bws_agreement_creator/FormUI/components/button_icon_title.dart';
 import 'package:bws_agreement_creator/FormUI/components/default_bordered_button.dart';
 import 'package:bws_agreement_creator/FormUI/components/dropdown_button.dart';
 import 'package:bws_agreement_creator/FormUI/components/photo_tile.dart';
+import 'package:bws_agreement_creator/FormUI/components/select_date_button.dart';
 import 'package:bws_agreement_creator/app_state.dart';
 import 'package:bws_agreement_creator/form_controller.dart';
 import 'package:bws_agreement_creator/utils/auth_service.dart';
 import 'package:bws_agreement_creator/utils/colors.dart';
-import 'package:bws_agreement_creator/utils/consts.dart';
 import 'package:bws_agreement_creator/utils/date_extensions.dart';
 import 'package:bws_agreement_creator/utils/google_drive_service.dart';
 import 'package:bws_agreement_creator/utils/google_sheets_service.dart';
@@ -21,6 +19,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
@@ -30,6 +29,7 @@ class FormLogic extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final setWageHidden = useState(false);
     final wageFormatter =
         CurrencyTextInputFormatter(symbol: 'zł', locale: 'pl_pl');
     final setWage = useCallback((String? formattedValue) {
@@ -65,8 +65,10 @@ class FormLogic extends HookConsumerWidget {
     final takePhoto = useCallback(() async {
       final ImagePicker _picker = ImagePicker();
       final XFile? photo = await _picker.pickImage(
-        source: ImageSource.camera,
-      );
+          source: ImageSource.camera,
+          imageQuality: 50,
+          maxHeight: 1920,
+          maxWidth: 1920);
 
       if (photo != null) {
         ref
@@ -77,9 +79,7 @@ class FormLogic extends HookConsumerWidget {
 
     final pickPdfFromFiles = useCallback(() async {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
-        allowedExtensions: ['pdf'],
-        type: FileType.custom,
-      );
+          allowedExtensions: ['pdf'], type: FileType.custom, withData: true);
 
       if (result != null &&
           lookupMimeType('', headerBytes: result.files.single.bytes) ==
@@ -87,24 +87,34 @@ class FormLogic extends HookConsumerWidget {
         ref
             .read(FormNotifier.provider.notifier)
             .setPdfFile(result.files.single.bytes);
+      } else {
+        ref.read(errorProvider.notifier).state =
+            'Nie udało się pobrać pliku lub jest w niewłaściwym formacie (pdf)';
       }
     }, []);
 
     final pickImageFromFiles = useCallback(() async {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
-        allowMultiple: true,
-        allowedExtensions: ['jpg', 'png', 'jpeg'],
-        type: FileType.custom,
-      );
+          allowMultiple: true,
+          allowedExtensions: ['jpg', 'png', 'jpeg'],
+          type: FileType.custom,
+          withData: true);
 
       if (result != null) {
         result.files.forEach((platformFile) async {
+          List<int> compressedImage = kIsWeb
+              ? platformFile.bytes!
+              : await FlutterImageCompress.compressWithList(platformFile.bytes!,
+                  quality: 70);
           if (platformFile.bytes != null) {
             ref
                 .read(FormNotifier.provider.notifier)
                 .addPhoto(platformFile.bytes!);
           }
         });
+      } else {
+        ref.read(errorProvider.notifier).state =
+            'Nie udało się pobrać zdjęcia lub jest w niewłaściwym formacie';
       }
     }, []);
 
@@ -130,11 +140,16 @@ class FormLogic extends HookConsumerWidget {
         ref.read(errorProvider.notifier).state = validationError;
         return;
       }
+      setWageHidden.value = true;
+      await Future.delayed(Duration(milliseconds: 10));
+      setWageHidden.value = false;
       ref.read(isFormLoadingProvider.notifier).state = true;
       await GoogleSheetsService().addNewEntry(formState, ref);
       ref.read(isFormLoadingProvider.notifier).state = false;
       ref.read(FormNotifier.provider.notifier).clearForm();
     }, [formState]);
+
+    final selectedDate = ref.watch(FormNotifier.provider).selectedDate;
 
     useBuildEffect(() {
       readConfig();
@@ -156,14 +171,23 @@ class FormLogic extends HookConsumerWidget {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 24),
-                  child: BorderedInput(
-                    inputType: TextInputType.number,
-                    onChanged: setWage,
-                    placeholder: 'Kwota netto',
-                    inputFormatters: [wageFormatter],
+                if (setWageHidden.value == false)
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 24),
+                    child: BorderedInput(
+                      inputType: TextInputType.number,
+                      onChanged: setWage,
+                      placeholder: 'Kwota netto',
+                      inputFormatters: [wageFormatter],
+                    ),
                   ),
+                Container(
+                  margin: const EdgeInsets.fromLTRB(24, 8, 24, 8),
+                  child: SelectDateButton(
+                      dateText: selectedDate,
+                      headerText: "Data",
+                      onDateSelected:
+                          ref.read(FormNotifier.provider.notifier).setDate),
                 ),
                 Container(
                   margin: const EdgeInsets.fromLTRB(24, 8, 24, 8),
@@ -183,7 +207,7 @@ class FormLogic extends HookConsumerWidget {
                       onChanged:
                           ref.read(FormNotifier.provider.notifier).setCategory),
                 ),
-                if (selectedCategory?.toLowerCase() != 'nieskategoryzowane')
+                if (subcategories.isEmpty == false)
                   Container(
                     margin: const EdgeInsets.fromLTRB(24, 8, 24, 8),
                     child: MenuButton(
@@ -195,7 +219,7 @@ class FormLogic extends HookConsumerWidget {
                             .read(FormNotifier.provider.notifier)
                             .setSubcategory),
                   ),
-                if (selectedCategory?.toLowerCase() == 'nieskategoryzowane')
+                if (subcategories.isEmpty == true)
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 24),
                     child: BorderedInput(
@@ -254,7 +278,7 @@ class FormLogic extends HookConsumerWidget {
                                   .read(FormNotifier.provider.notifier)
                                   .setPdfFile(null);
                             },
-                            title: DateTime.now().formattedDateWithDays,
+                            title: selectedDate.formattedDateWithDays,
                             data: pdfIcon.value!)
                     ],
                   ),
@@ -264,7 +288,7 @@ class FormLogic extends HookConsumerWidget {
                         color: CustomColors.applicationColorMain,
                       )
                     : DefaultBorderedButton(
-                        onTap: () {
+                        onTap: () async {
                           onSendTapped();
                         },
                         text: "Wyślij")

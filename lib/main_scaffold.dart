@@ -22,7 +22,7 @@ class MainScaffold extends HookConsumerWidget {
       ));
       ref.read(errorProvider.notifier).state = '';
     }, [error]);
-    final userStoredData = ref.watch(userAuthProvider);
-    return userStoredData != null ? FormScreen() : LoginLogic();
+    final isLoggedIn = ref.watch(userAuthProvider);
+    return isLoggedIn ? FormScreen() : LoginLogic();
   }
 }
