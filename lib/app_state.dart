@@ -6,3 +6,4 @@ final userAuthProvider = StateProvider<bool>((_) => false);
 final userConfigProvider = StateProvider<DefaultConfigData?>((_) => null);
 final errorProvider = StateProvider<String>((_) => '');
 final isFormLoadingProvider = StateProvider<bool>((_) => false);
+final tokenProvider = StateProvider<String>((_) => '');

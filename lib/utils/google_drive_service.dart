@@ -11,7 +11,7 @@ import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class DriveData {
-  static String folderId = '1tgxZkRK4HCBjlMFNUOrcgOtJkgBxjPj6';
+  static String folderId = '1eiu1Tme2B6NsReFJrKhJQQBynkfW2yl7';
 }
 
 class GoogleDriveService {
@@ -24,10 +24,10 @@ class GoogleDriveService {
 
       drive.FileList fileList = await driveApi.files.list(
         q: "name='default_config.json' and trashed = false and parents in '${DriveData.folderId}'",
-        corpora: "drive",
-        includeItemsFromAllDrives: true,
-        driveId: "0AGznu2Ed0Pn5Uk9PVA",
-        supportsAllDrives: true,
+        // corpora: "drive",
+        // includeItemsFromAllDrives: true,
+        // driveId: "0AGznu2Ed0Pn5Uk9PVA",
+        // supportsAllDrives: true,
       );
 
       if (fileList.files?.isEmpty == true) {
@@ -79,10 +79,10 @@ class GoogleDriveService {
           "mimeType='application/vnd.google-apps.folder' and name='$folderName' and parents in '${DriveData.folderId}'";
       final result = await driveApi.files.list(
         q: query,
-        corpora: "drive",
-        includeItemsFromAllDrives: true,
-        driveId: "0AGznu2Ed0Pn5Uk9PVA",
-        supportsAllDrives: true,
+        // corpora: "drive",
+        // includeItemsFromAllDrives: true,
+        // driveId: "0AGznu2Ed0Pn5Uk9PVA",
+        // supportsAllDrives: true,
       );
 
       String folderId;
@@ -111,7 +111,7 @@ class GoogleDriveService {
         fileToUpload,
         uploadMedia:
             drive.Media(Stream.fromIterable([data].toList()), data.length),
-        supportsAllDrives: true,
+        // supportsAllDrives: true,
       );
     } catch (error) {
       ref.read(errorProvider.notifier).state = error.toString();

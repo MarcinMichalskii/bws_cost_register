@@ -28,8 +28,8 @@ class AuthService {
 
       final auth = await account?.authentication;
       if (auth?.accessToken != null) {
-        UserStorageHelper().storeUserData(true);
-        ref.read(userAuthProvider.notifier).state = true;
+        // UserStorageHelper().storeUserData(true);
+        ref.read(tokenProvider.notifier).state = auth?.accessToken ?? '';
       } else {
         ref.read(errorProvider.notifier).state = 'Logowanie nie powiodło się';
         signOut();
@@ -41,7 +41,9 @@ class AuthService {
   }
 
   Future<Map<String, String>> getAccessToken() async {
-    return kIsWeb ? getAccessTokenWeb() : getAccessTokenAndroid();
+    final token = ref.read(tokenProvider);
+    return {'Authorization': 'Bearer $token'};
+    // return kIsWeb ? getAccessTokenWeb() : getAccessTokenAndroid();
   }
 
   Future<Map<String, String>> getAccessTokenWeb() async {
