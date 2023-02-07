@@ -1,5 +1,4 @@
 import 'package:bws_agreement_creator/FormUI/components/bws_logo.dart';
-import 'package:bws_agreement_creator/app_state.dart';
 import 'package:bws_agreement_creator/utils/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/button_list.dart';

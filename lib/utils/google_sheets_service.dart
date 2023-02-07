@@ -22,10 +22,16 @@ class GoogleSheetsService {
 
     final id = const Uuid().v4().toString();
 
-    final pdf = await PdfHelper().generatePdfPage(data);
+    final pdfPhotos = await PdfHelper().generatePdfPage(data);
+    final pdfDocument = data.pdfFile;
 
-    await GoogleDriveService().uploadFileToGoogleDrive(headers, pdf, id, ref,
-        data.nettoValue?.asPLN() ?? '', data.selectedDate);
+    await GoogleDriveService().uploadFileToGoogleDrive(
+        headers,
+        data.photos.isEmpty ? pdfDocument! : pdfPhotos,
+        id,
+        ref,
+        data.nettoValue?.asPLN() ?? '',
+        data.selectedDate);
     final sheetNames = await getSpreadSheetsNames(headers);
     if (!sheetNames.contains(data.selectedDate.formattedDate)) {
       await addNewSpreadSheet(headers, ref, data.selectedDate);
