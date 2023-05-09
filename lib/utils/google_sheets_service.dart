@@ -7,12 +7,20 @@ import 'package:bws_agreement_creator/utils/google_drive_service.dart';
 import 'package:bws_agreement_creator/utils/int_extension.dart';
 import 'package:bws_agreement_creator/utils/pdf_helper.dart';
 import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
 import 'package:googleapis/sheets/v4.dart' as sheets;
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:uuid/uuid.dart';
+import 'dart:convert';
 
 class GoogleData {
   static String spreadSheetId = '14c7nDWmF1nF49do0BxtSybV7F2rXOhFL1G8TlWSta-w';
+}
+
+bool isDataSmallerThan10KB(Uint8List data) {
+  final int dataSizeInBytes = data.lengthInBytes;
+  final double dataSizeInKB = dataSizeInBytes / 1024.0;
+  return dataSizeInKB < 5.0;
 }
 
 class GoogleSheetsService {
@@ -24,6 +32,13 @@ class GoogleSheetsService {
 
     final pdfPhotos = await PdfHelper().generatePdfPage(data);
     final pdfDocument = data.pdfFile;
+
+    if (data.photos.isEmpty && isDataSmallerThan10KB(pdfDocument!)) {
+      return Future.error(Error());
+    }
+    if (data.photos.isNotEmpty && isDataSmallerThan10KB(pdfPhotos)) {
+      return Future.error(Error());
+    }
 
     await GoogleDriveService().uploadFileToGoogleDrive(
         headers,

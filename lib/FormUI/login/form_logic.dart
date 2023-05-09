@@ -144,7 +144,12 @@ class FormLogic extends HookConsumerWidget {
       await Future.delayed(Duration(milliseconds: 10));
       setWageHidden.value = false;
       ref.read(isFormLoadingProvider.notifier).state = true;
-      await GoogleSheetsService().addNewEntry(formState, ref);
+      try {
+        await GoogleSheetsService().addNewEntry(formState, ref);
+      } catch (er) {
+        ref.read(errorProvider.notifier).state =
+            "Coś poszło nie tak i nie udało się wysłać tego pliku, jeśli plik na pewno jest poprawny spróbuj ponownie.";
+      }
       ref.read(isFormLoadingProvider.notifier).state = false;
       ref.read(FormNotifier.provider.notifier).clearForm();
     }, [formState]);
