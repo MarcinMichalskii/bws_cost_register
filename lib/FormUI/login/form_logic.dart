@@ -177,7 +177,7 @@ class FormLogic extends HookConsumerWidget {
             child: BorderedInput(
               inputType: TextInputType.number,
               onChanged: setWage,
-              placeholder: 'Kwota netto',
+              placeholder: 'Kwota brutto (od 01.09)',
               inputFormatters: [wageFormatter],
             ),
           ),
