@@ -193,7 +193,7 @@ class FormLogic extends HookConsumerWidget {
           child: MenuButton(
               header: 'Osoba',
               dropdownValue: ref.watch(FormNotifier.provider).person,
-              items: config?.employees ?? [],
+              items: config.employees,
               onChanged: ref.read(FormNotifier.provider.notifier).setPerson),
         ),
         Container(
