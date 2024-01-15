@@ -5,4 +5,5 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 final userAuthProvider = StateProvider<bool>((_) => false);
 final userConfigProvider = StateProvider<DefaultConfigData?>((_) => null);
 final errorProvider = StateProvider<String>((_) => '');
+final successMessageProvider = StateProvider<String>((_) => '');
 final isFormLoadingProvider = StateProvider<bool>((_) => false);

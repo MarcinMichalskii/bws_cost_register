@@ -7,9 +7,15 @@ part of 'form_controller.dart';
 // **************************************************************************
 
 abstract class _$CostFormStateCWProxy {
+  CostFormState bruttoValue(int? bruttoValue);
+
   CostFormState category(String? category);
 
-  CostFormState nettoValue(int? nettoValue);
+  CostFormState id(String id);
+
+  CostFormState isSent(bool isSent);
+
+  CostFormState orderNumber(String? orderNumber);
 
   CostFormState pdfFile(Uint8List? pdfFile);
 
@@ -28,8 +34,11 @@ abstract class _$CostFormStateCWProxy {
   /// CostFormState(...).copyWith(id: 12, name: "My name")
   /// ````
   CostFormState call({
+    int? bruttoValue,
     String? category,
-    int? nettoValue,
+    String? id,
+    bool? isSent,
+    String? orderNumber,
     Uint8List? pdfFile,
     String? person,
     List<Uint8List>? photos,
@@ -45,10 +54,20 @@ class _$CostFormStateCWProxyImpl implements _$CostFormStateCWProxy {
   const _$CostFormStateCWProxyImpl(this._value);
 
   @override
+  CostFormState bruttoValue(int? bruttoValue) => this(bruttoValue: bruttoValue);
+
+  @override
   CostFormState category(String? category) => this(category: category);
 
   @override
-  CostFormState nettoValue(int? nettoValue) => this(nettoValue: nettoValue);
+  CostFormState id(String id) => this(id: id);
+
+  @override
+  CostFormState isSent(bool isSent) => this(isSent: isSent);
+
+  @override
+  CostFormState orderNumber(String? orderNumber) =>
+      this(orderNumber: orderNumber);
 
   @override
   CostFormState pdfFile(Uint8List? pdfFile) => this(pdfFile: pdfFile);
@@ -76,8 +95,11 @@ class _$CostFormStateCWProxyImpl implements _$CostFormStateCWProxy {
   /// CostFormState(...).copyWith(id: 12, name: "My name")
   /// ````
   CostFormState call({
+    Object? bruttoValue = const $CopyWithPlaceholder(),
     Object? category = const $CopyWithPlaceholder(),
-    Object? nettoValue = const $CopyWithPlaceholder(),
+    Object? id = const $CopyWithPlaceholder(),
+    Object? isSent = const $CopyWithPlaceholder(),
+    Object? orderNumber = const $CopyWithPlaceholder(),
     Object? pdfFile = const $CopyWithPlaceholder(),
     Object? person = const $CopyWithPlaceholder(),
     Object? photos = const $CopyWithPlaceholder(),
@@ -85,14 +107,26 @@ class _$CostFormStateCWProxyImpl implements _$CostFormStateCWProxy {
     Object? subcategory = const $CopyWithPlaceholder(),
   }) {
     return CostFormState(
+      bruttoValue: bruttoValue == const $CopyWithPlaceholder()
+          ? _value.bruttoValue
+          // ignore: cast_nullable_to_non_nullable
+          : bruttoValue as int?,
       category: category == const $CopyWithPlaceholder()
           ? _value.category
           // ignore: cast_nullable_to_non_nullable
           : category as String?,
-      nettoValue: nettoValue == const $CopyWithPlaceholder()
-          ? _value.nettoValue
+      id: id == const $CopyWithPlaceholder() || id == null
+          ? _value.id
           // ignore: cast_nullable_to_non_nullable
-          : nettoValue as int?,
+          : id as String,
+      isSent: isSent == const $CopyWithPlaceholder() || isSent == null
+          ? _value.isSent
+          // ignore: cast_nullable_to_non_nullable
+          : isSent as bool,
+      orderNumber: orderNumber == const $CopyWithPlaceholder()
+          ? _value.orderNumber
+          // ignore: cast_nullable_to_non_nullable
+          : orderNumber as String?,
       pdfFile: pdfFile == const $CopyWithPlaceholder()
           ? _value.pdfFile
           // ignore: cast_nullable_to_non_nullable

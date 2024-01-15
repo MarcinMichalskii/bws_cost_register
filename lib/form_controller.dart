@@ -1,39 +1,79 @@
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:uuid/uuid.dart';
 
 part 'form_controller.g.dart';
 
 @CopyWith()
 class CostFormState {
-  final int? nettoValue;
+  final String id;
+  final int? bruttoValue;
   final DateTime selectedDate;
   final String? person;
   final String? category;
   final String? subcategory;
+  final String? orderNumber;
   final List<Uint8List> photos;
   final Uint8List? pdfFile;
+  final bool isSent;
 
   CostFormState(
-      {this.nettoValue,
+      {required this.id,
+      this.bruttoValue,
       this.person,
       this.category,
       this.subcategory,
+      this.orderNumber,
       required this.photos,
       required this.selectedDate,
-      this.pdfFile});
+      this.pdfFile,
+      this.isSent = false});
+
+  factory CostFormState.fromSharedPreferences(Map<String, dynamic> data) {
+    return CostFormState(
+      id: data['id'],
+      bruttoValue: data['bruttoValue'],
+      person: data['person'],
+      category: data['category'],
+      subcategory: data['subcategory'],
+      orderNumber: data['orderNumber'],
+      photos: [],
+      pdfFile: null,
+      isSent: data['isSent'],
+      selectedDate: DateTime.parse(data['selectedDate']),
+    );
+  }
+
+  Map<String, dynamic> toSharedPreferences() {
+    return {
+      'id': id,
+      'bruttoValue': bruttoValue,
+      'person': person,
+      'category': category,
+      'subcategory': subcategory,
+      'orderNumber': orderNumber,
+      'photos': photos.map((item) => item.toList()).toList(),
+      'selectedDate': selectedDate.toIso8601String(),
+      'pdfFile': pdfFile?.toList(),
+      'isSent': isSent,
+    };
+  }
 }
 
 class FormNotifier extends StateNotifier<CostFormState> {
   FormNotifier()
-      : super(CostFormState(photos: [], selectedDate: DateTime.now()));
+      : super(CostFormState(
+            id: const Uuid().v4().toString(),
+            photos: [],
+            selectedDate: DateTime.now()));
   static final provider =
       StateNotifierProvider.autoDispose<FormNotifier, CostFormState>((ref) {
     return FormNotifier();
   });
 
-  void setNettoValue(int? nettoValue) {
-    state = state.copyWith(nettoValue: nettoValue);
+  void setBruttoValue(int? bruttoValue) {
+    state = state.copyWith(bruttoValue: bruttoValue);
   }
 
   void setPerson(String? name) {
@@ -46,6 +86,10 @@ class FormNotifier extends StateNotifier<CostFormState> {
 
   void setSubcategory(String? subcategory) {
     state = state.copyWith(subcategory: subcategory);
+  }
+
+  void setOrderNumber(String? orderNumber) {
+    state = state.copyWith(orderNumber: orderNumber);
   }
 
   void addPhoto(Uint8List value) {
@@ -70,8 +114,8 @@ class FormNotifier extends StateNotifier<CostFormState> {
   }
 
   String? getValidationError() {
-    if (state.nettoValue == null) {
-      return "Sprawdź wartość netto";
+    if (state.bruttoValue == null) {
+      return "Sprawdź wartość brutto";
     }
     if (state.person == null) {
       return "Sprawdź osobę";
@@ -86,12 +130,25 @@ class FormNotifier extends StateNotifier<CostFormState> {
       return "Dodaj zdjęcie lub plik pdf";
     }
 
+    if (state.category?.toLowerCase() == 'zlecenia' &&
+        (state.orderNumber == null ||
+            state.orderNumber?.trim().isEmpty == true)) {
+      return "Wymagany numer zlecenia";
+    }
+    final String? category = state.category?.toLowerCase();
+    final isSubcategoryEmptyOrNill =
+        state.subcategory == null || state.subcategory?.trim().isEmpty == true;
+    if (category == 'inne' && isSubcategoryEmptyOrNill) {
+      return "Wymagana podkategoria";
+    }
+
     return null;
   }
 
   void clearForm() {
     state = CostFormState(
-        nettoValue: null,
+        id: const Uuid().v4().toString(),
+        bruttoValue: null,
         person: null,
         category: null,
         subcategory: null,

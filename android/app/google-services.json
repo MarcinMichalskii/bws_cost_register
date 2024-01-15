@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "837990215673-8oqftduc2h8p5m7721lrdh9chq0m14hq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.bws.costregister",
+            "certificate_hash": "0f6e488b97513c3d8b8f5de6d2346663adfa0890"
+          }
+        },
+        {
           "client_id": "837990215673-vfr60r16toe4mdpggsqppov79aopr0gg.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

@@ -11,6 +11,7 @@ import 'package:bws_agreement_creator/utils/colors.dart';
 import 'package:bws_agreement_creator/utils/date_extensions.dart';
 import 'package:bws_agreement_creator/utils/google_drive_service.dart';
 import 'package:bws_agreement_creator/utils/google_sheets_service.dart';
+import 'package:bws_agreement_creator/utils/storage_service.dart';
 import 'package:bws_agreement_creator/utils/use_build_effect.dart';
 import 'package:collection/collection.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
@@ -35,11 +36,11 @@ class FormLogic extends HookConsumerWidget {
     final setWage = useCallback((String? formattedValue) {
       final wageInCents = wageFormatter.getUnformattedValue() * 100;
       if (formattedValue?.isEmpty == true) {
-        ref.read(FormNotifier.provider.notifier).setNettoValue(null);
+        ref.read(FormNotifier.provider.notifier).setBruttoValue(null);
       } else {
         ref
             .read(FormNotifier.provider.notifier)
-            .setNettoValue(wageInCents.toInt());
+            .setBruttoValue(wageInCents.toInt());
       }
     }, [wageFormatter]);
 
@@ -145,6 +146,7 @@ class FormLogic extends HookConsumerWidget {
       setWageHidden.value = false;
       ref.read(isFormLoadingProvider.notifier).state = true;
       try {
+        await StorageService.appendCostFormState(formState);
         await GoogleSheetsService().addNewEntry(formState, ref);
       } catch (er) {
         ref.read(errorProvider.notifier).state =
@@ -152,6 +154,9 @@ class FormLogic extends HookConsumerWidget {
       }
       ref.read(isFormLoadingProvider.notifier).state = false;
       ref.read(FormNotifier.provider.notifier).clearForm();
+      ref.read(successMessageProvider.notifier).state =
+          "Plik został wysłany pomyślnie";
+      await StorageService.markCostAsSent(formState.id);
     }, [formState]);
 
     final selectedDate = ref.watch(FormNotifier.provider).selectedDate;
@@ -177,7 +182,7 @@ class FormLogic extends HookConsumerWidget {
             child: BorderedInput(
               inputType: TextInputType.number,
               onChanged: setWage,
-              placeholder: 'Kwota brutto (od 01.09)',
+              placeholder: 'Kwota brutto',
               inputFormatters: [wageFormatter],
             ),
           ),
@@ -204,6 +209,15 @@ class FormLogic extends HookConsumerWidget {
               items: config.categories.map((e) => e.name).toList(),
               onChanged: ref.read(FormNotifier.provider.notifier).setCategory),
         ),
+        if (selectedCategory?.toLowerCase() == 'zlecenia')
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 24),
+            child: BorderedInput(
+              onChanged:
+                  ref.read(FormNotifier.provider.notifier).setOrderNumber,
+              placeholder: 'Wpisz numer zamówienia',
+            ),
+          ),
         if (subcategories.isEmpty == false)
           Container(
             margin: const EdgeInsets.fromLTRB(24, 8, 24, 8),

@@ -10,8 +10,6 @@ import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:googleapis/sheets/v4.dart' as sheets;
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:uuid/uuid.dart';
-import 'dart:convert';
 
 class GoogleData {
   static String spreadSheetId = '14c7nDWmF1nF49do0BxtSybV7F2rXOhFL1G8TlWSta-w';
@@ -28,8 +26,6 @@ class GoogleSheetsService {
     final authService = AuthService(ref: ref);
     final headers = await authService.getAccessToken();
 
-    final id = const Uuid().v4().toString();
-
     final pdfPhotos = await PdfHelper().generatePdfPage(data);
     final pdfDocument = data.pdfFile;
 
@@ -43,15 +39,15 @@ class GoogleSheetsService {
     await GoogleDriveService().uploadFileToGoogleDrive(
         headers,
         data.photos.isEmpty ? pdfDocument! : pdfPhotos,
-        id,
+        data.id,
         ref,
-        data.nettoValue?.asPLN() ?? '',
+        data.bruttoValue?.asPLN() ?? '',
         data.selectedDate);
     final sheetNames = await getSpreadSheetsNames(headers);
     if (!sheetNames.contains(data.selectedDate.formattedDate)) {
       await addNewSpreadSheet(headers, ref, data.selectedDate);
     }
-    await addNewRow(headers, data, id, ref, data.selectedDate);
+    await addNewRow(headers, data, data.id, ref, data.selectedDate);
   }
 
   Future<void> addNewSpreadSheet(
@@ -103,8 +99,7 @@ class GoogleSheetsService {
       String id, WidgetRef ref, DateTime date) async {
     final authenticateClient = GoogleAuthClient(headers);
     sheets.SheetsApi sheetsApi = sheets.SheetsApi(authenticateClient);
-    final range =
-        '${data.selectedDate.formattedDate}!A1:A'; // Change 'Sheet1' to your desired sheet name
+    final range = '${data.selectedDate.formattedDate}!A1:A';
     var response = await sheetsApi.spreadsheets.values
         .get(GoogleData.spreadSheetId, range);
     var values = response.values;
@@ -115,10 +110,11 @@ class GoogleSheetsService {
         [
           data.category,
           data.subcategory,
-          (data.nettoValue?.asPLN() ?? ''),
-          data.person,
+          (data.bruttoValue?.asPLN() ?? ''),
+          data.person ?? '',
           data.selectedDate.formattedDateWithDays,
-          id
+          id,
+          data.orderNumber ?? ''
         ]
       ]
     });

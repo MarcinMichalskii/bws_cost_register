@@ -22,6 +22,18 @@ class MainScaffold extends HookConsumerWidget {
       ));
       ref.read(errorProvider.notifier).state = '';
     }, [error]);
+
+    final successMessage = ref.watch(successMessageProvider);
+    useBuildEffect(() {
+      if (successMessage.isEmpty) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: Colors.green,
+        content: Text(successMessage),
+      ));
+      ref.read(successMessageProvider.notifier).state = '';
+    }, [successMessage]);
     final isLoggedIn = ref.watch(userAuthProvider);
     return isLoggedIn ? FormScreen() : LoginLogic();
   }
