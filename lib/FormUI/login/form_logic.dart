@@ -218,23 +218,23 @@ class FormLogic extends HookConsumerWidget {
               placeholder: 'Wpisz numer zamówienia',
             ),
           ),
-        if (subcategories.isEmpty == false)
-          Container(
-            margin: const EdgeInsets.fromLTRB(24, 8, 24, 8),
-            child: MenuButton(
-                header: 'Podkategoria',
-                dropdownValue: ref.watch(FormNotifier.provider).subcategory,
-                items: subcategories,
-                onChanged:
-                    ref.read(FormNotifier.provider.notifier).setSubcategory),
-          ),
-        if (subcategories.isEmpty == true)
+        Container(
+          margin: const EdgeInsets.fromLTRB(24, 8, 24, 8),
+          child: MenuButton(
+              header: 'Podkategoria',
+              dropdownValue: ref.watch(FormNotifier.provider).subcategory,
+              items: subcategories,
+              onChanged:
+                  ref.read(FormNotifier.provider.notifier).setSubcategory),
+        ),
+        if (ref.watch(FormNotifier.provider).subcategory?.toLowerCase() ==
+            'inne')
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 24),
             child: BorderedInput(
               onChanged:
-                  ref.read(FormNotifier.provider.notifier).setSubcategory,
-              placeholder: 'Podkategoria',
+                  ref.read(FormNotifier.provider.notifier).setDescription,
+              placeholder: 'Opis',
             ),
           ),
         Container(

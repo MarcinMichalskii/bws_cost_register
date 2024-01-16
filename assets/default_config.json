@@ -1,17 +1,33 @@
 {
     "categories": [
         {
-            "name": "category1",
-            "subCategories": ["subCategory1", "subCategory2"]
+            "name": "Społeczność",
+            "subCategories": ["Integracje", "Ciuchy i gadżety"]
         },
         {
-            "name": "category2",
-            "subCategories": ["AAA", "BBB"]
+            "name": "Zlecenia",
+            "subCategories": ["Noclegi", "Dojazdy", "Materiały zużywalne", "Wynajem sprzętu pod prowizję", "Delegacje biura"]
         },
         {
-            "name": "Inne",
-            "subCategories": [""]
+            "name": "Paliwa i naprawy",
+            "subCategories": ["UTA i inne faktury za paliwo", "Naprawy, serwisy, przeglądy części"]
+        },
+        {
+            "name": "Inwestycje i inne",
+            "subCategories": ["Inwestycje", "Materiały i elektronika biurowa", "Szkolenia miękkie dla biura", "Inne"]
+        },
+        {
+            "name": "Rekrutacja",
+            "subCategories": ["Reklamy online", "Inne"]
+        },
+        {
+            "name": "Szkolenia techniczne",
+            "subCategories": ["Sprzęt", "Miejsce", "Wynagrodzenie szkoleniowców", "Reklamy", "Prowizje"]
+        },
+        {
+            "name": "Sprzedaż crew",
+            "subCategories": ["Logistyka", "Działania online", "Jedzenie", "Inne"]
         }
     ],
-    "employees": ["John", "Jane", "Jack"]
+    "employees": ["Bartek", "Ola", "Wojtek", "Aneta", "Przemek"]
 }

@@ -11,6 +11,8 @@ abstract class _$CostFormStateCWProxy {
 
   CostFormState category(String? category);
 
+  CostFormState description(String? description);
+
   CostFormState id(String id);
 
   CostFormState isSent(bool isSent);
@@ -36,6 +38,7 @@ abstract class _$CostFormStateCWProxy {
   CostFormState call({
     int? bruttoValue,
     String? category,
+    String? description,
     String? id,
     bool? isSent,
     String? orderNumber,
@@ -58,6 +61,10 @@ class _$CostFormStateCWProxyImpl implements _$CostFormStateCWProxy {
 
   @override
   CostFormState category(String? category) => this(category: category);
+
+  @override
+  CostFormState description(String? description) =>
+      this(description: description);
 
   @override
   CostFormState id(String id) => this(id: id);
@@ -97,6 +104,7 @@ class _$CostFormStateCWProxyImpl implements _$CostFormStateCWProxy {
   CostFormState call({
     Object? bruttoValue = const $CopyWithPlaceholder(),
     Object? category = const $CopyWithPlaceholder(),
+    Object? description = const $CopyWithPlaceholder(),
     Object? id = const $CopyWithPlaceholder(),
     Object? isSent = const $CopyWithPlaceholder(),
     Object? orderNumber = const $CopyWithPlaceholder(),
@@ -115,6 +123,10 @@ class _$CostFormStateCWProxyImpl implements _$CostFormStateCWProxy {
           ? _value.category
           // ignore: cast_nullable_to_non_nullable
           : category as String?,
+      description: description == const $CopyWithPlaceholder()
+          ? _value.description
+          // ignore: cast_nullable_to_non_nullable
+          : description as String?,
       id: id == const $CopyWithPlaceholder() || id == null
           ? _value.id
           // ignore: cast_nullable_to_non_nullable

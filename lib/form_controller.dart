@@ -17,6 +17,7 @@ class CostFormState {
   final List<Uint8List> photos;
   final Uint8List? pdfFile;
   final bool isSent;
+  final String? description;
 
   CostFormState(
       {required this.id,
@@ -28,7 +29,8 @@ class CostFormState {
       required this.photos,
       required this.selectedDate,
       this.pdfFile,
-      this.isSent = false});
+      this.isSent = false,
+      this.description});
 
   factory CostFormState.fromSharedPreferences(Map<String, dynamic> data) {
     return CostFormState(
@@ -88,6 +90,10 @@ class FormNotifier extends StateNotifier<CostFormState> {
     state = state.copyWith(subcategory: subcategory);
   }
 
+  void setDescription(String? description) {
+    state = state.copyWith(description: description);
+  }
+
   void setOrderNumber(String? orderNumber) {
     state = state.copyWith(orderNumber: orderNumber);
   }
@@ -130,6 +136,12 @@ class FormNotifier extends StateNotifier<CostFormState> {
       return "Dodaj zdjęcie lub plik pdf";
     }
 
+    if (state.subcategory?.toLowerCase() == 'inne' &&
+        (state.description == null ||
+            state.description?.trim().isEmpty == true)) {
+      return "Wymagany opis";
+    }
+
     if (state.category?.toLowerCase() == 'zlecenia' &&
         (state.orderNumber == null ||
             state.orderNumber?.trim().isEmpty == true)) {
@@ -154,6 +166,7 @@ class FormNotifier extends StateNotifier<CostFormState> {
         subcategory: null,
         photos: [],
         pdfFile: null,
+        description: null,
         selectedDate: DateTime.now());
   }
 }

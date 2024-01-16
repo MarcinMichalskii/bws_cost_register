@@ -113,8 +113,9 @@ class GoogleSheetsService {
           (data.bruttoValue?.asPLN() ?? ''),
           data.person ?? '',
           data.selectedDate.formattedDateWithDays,
+          data.orderNumber ?? '',
+          data.description ?? '',
           id,
-          data.orderNumber ?? ''
         ]
       ]
     });
